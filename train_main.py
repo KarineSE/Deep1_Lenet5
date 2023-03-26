@@ -28,7 +28,7 @@ def parse_args():
                         help='Training batch size')
     parser.add_argument('--epochs', '-e', default=2, type=int,
                         help='Number of epochs to run')
-    parser.add_argument('--model', '-m', default='Lenet5', type=str,
+    parser.add_argument('--model_name', '-m', default='Lenet5', type=str,
                         help='Model name: Lenet5')
     parser.add_argument('--optimizer', '-o', default='SGD', type=str,
                         help='Optimization Algorithm')
@@ -36,6 +36,10 @@ def parse_args():
                         default='none', type=str,
                         help='regularization technique: none, "dr" - dropout, "nb" - batch_normalization, '
                              '"wd" - weight_decay')
+    parser.add_argument('--dataset', '-d',
+                        default='fashionmnist', type=str,
+                        help='dataset name')
+
 
     return parser.parse_args()
 
@@ -45,15 +49,15 @@ def main():
     args = parse_args()
 
     # Data
-    print(f'==> Preparing data: {args.dataset.replace("_", " ")}..')
-    train_dataset = load_dataset(dataset_part='train')
-    val_dataset = load_dataset(dataset_part='val')
-    test_dataset = load_dataset(dataset_part='test')
+    print(f'==> Preparing data: {args.dataset}..')
+    train_dataset = load_dataset(dataset_part='train', data_dir=DATA_DIR)
+    val_dataset = load_dataset(dataset_part='val', data_dir=DATA_DIR)
+    test_dataset = load_dataset(dataset_part='test', data_dir=DATA_DIR)
 
     # Model
     model_name = args.model_name
     reg = args.regularization
-    model = load_model(args.regularization)
+    model = load_model(model_name=model_name, reg=args.regularization)
 
     # Loss
     criterion = nn.CrossEntropyLoss()
@@ -99,7 +103,7 @@ def main():
                       test_dataset=test_dataset)
 
     # Train, evaluate and test the model:
-    trainer.run(epochs=args.epochs, logging_parameters=logging_parameters)
+    trainer.run(epochs=args.epochs, logging_parameters=logging_parameters, checkpoint_dir=CHECKPOINT_DIR, output_dir=OUTPUT_DIR)
 
 
 if __name__ == '__main__':

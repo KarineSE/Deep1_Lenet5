@@ -2,9 +2,8 @@ import torch
 import torchvision
 from torch import nn  # building blocks of a CNN
 from torchvision.transforms import Resize, ToTensor, Normalize, Compose
-from train_main import DATA_DIR
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 
 
 class Lenet5(nn.Module):
@@ -60,7 +59,7 @@ class Lenet5(nn.Module):
         return x
 
 
-def load_dataset(dataset_part: str, custom_transforms=None) -> \
+def load_dataset(dataset_part: str, data_dir: str, custom_transforms=None ) -> \
         torch.utils.data.Dataset:
     """Loads dataset part from dataset name.
     Args:
@@ -75,8 +74,8 @@ def load_dataset(dataset_part: str, custom_transforms=None) -> \
         transform = {"train": Compose([ToTensor(), Normalize(mean=0.3814, std=0.3994)]),
                      "val": Compose([ToTensor(), Normalize(mean=0.3814, std=0.3994)]),
                      "test": Compose([ToTensor(), Normalize(mean=0.3814, std=0.3994)])
-                     }[dataset_part]
-    dataset = torchvision.datasets.FashionMNIST(root=DATA_DIR, train=True,
+                     }
+    dataset = torchvision.datasets.FashionMNIST(root=data_dir, train=True,
                                                 transform=transform[dataset_part],
                                                 download=True)
     return dataset

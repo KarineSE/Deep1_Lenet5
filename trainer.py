@@ -5,9 +5,8 @@ from dataclasses import dataclass
 import torch
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
-from train_main import OUTPUT_DIR, CHECKPOINT_DIR
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 
 
 @dataclass
@@ -136,20 +135,20 @@ class Trainer:
         return self.evaluate_model_on_dataloader(self.test_dataset)
 
     @staticmethod
-    def write_output(logging_parameters: LoggingParameters, data: dict):
+    def write_output(logging_parameters: LoggingParameters, data: dict, output_dir: str):
         """Write logs to json.
 
         Args:
             logging_parameters: LoggingParameters. Some parameters to log.
             data: dict. Holding a dictionary to dump to the output json.
         """
-        if not os.path.isdir(OUTPUT_DIR):
-            os.makedirs(OUTPUT_DIR)
+        if not os.path.isdir(output_dir):
+            os.makedirs(output_dir)
 
         output_filename = f"{logging_parameters.model_name}_" \
                           f"{logging_parameters.regularization}_" \
                           f"{logging_parameters.optimizer_name}_{logging_parameters.lr}_{logging_parameters.epochs}.json"
-        output_filepath = os.path.join(OUTPUT_DIR, output_filename)
+        output_filepath = os.path.join(output_dir, output_filename)
 
         print(f"Writing output to {output_filepath}")
         # Load output file
@@ -168,7 +167,7 @@ class Trainer:
         with open(output_filepath, 'w', encoding='utf-8') as f:
             json.dump(all_output_data, f, indent=4)
 
-    def run(self, epochs, logging_parameters: LoggingParameters):
+    def run(self, epochs, logging_parameters: LoggingParameters, checkpoint_dir: str, output_dir: str):
         """Train, evaluate and test model on dataset, finally log results."""
         output_data = {
             "model": logging_parameters.model_name,
@@ -188,9 +187,8 @@ class Trainer:
         model_filename = f"{logging_parameters.dataset_name}_" \
                          f"{logging_parameters.model_name}_" \
                          f"{logging_parameters.optimizer_name}_{logging_parameters.lr}_{logging_parameters.epochs}_" \
-                         f"{logging_parameters.sched_steps}_{logging_parameters.gamma}_{logging_parameters.momentum}_" \
                          f"{logging_parameters.weights_name}.pt"
-        checkpoint_filename = os.path.join(CHECKPOINT_DIR, model_filename)
+        checkpoint_filename = os.path.join(checkpoint_dir, model_filename)
 
         for self.epoch in range(1, epochs + 1):
             print(f'Epoch {self.epoch}/{epochs}')
@@ -217,4 +215,4 @@ class Trainer:
                 }
                 torch.save(state, checkpoint_filename)
                 best_acc = val_acc
-        self.write_output(logging_parameters, output_data)
+        self.write_output(logging_parameters, output_data, output_dir)
