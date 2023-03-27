@@ -16,35 +16,74 @@ class Lenet5(nn.Module):
         # self.fc1 = nn.Linear(1024, 128)
         # self.fc2 = nn.Linear(128, 10)
 
-        self.conv1 = nn.Sequential(
-            nn.Conv2d(1, 6, kernel_size=5, stride=1, padding=2),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2)
-        )
-        self.conv2 = nn.Sequential(
-            nn.Conv2d(6, 16, kernel_size=5, stride=1, padding=0),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2)
-        )
-        self.fc1 = nn.Sequential(
-            nn.Linear(16 * 5 * 5, 120),
-            nn.ReLU()
-        )
-        self.fc2 = nn.Sequential(
-            nn.Linear(120, 84),
-            nn.ReLU()
-        )
-        self.fc3 = nn.Linear(84, 10)
+        if reg == "none" or reg == "wd":
+            self.conv1 = nn.Sequential(
+                nn.Conv2d(1, 6, kernel_size=5, stride=1, padding=2),
+                nn.ReLU(),
+                nn.MaxPool2d(kernel_size=2, stride=2)
+            )
+            self.conv2 = nn.Sequential(
+                nn.Conv2d(6, 16, kernel_size=5, stride=1, padding=0),
+                nn.ReLU(),
+                nn.MaxPool2d(kernel_size=2, stride=2)
+            )
+            self.fc1 = nn.Sequential(
+                nn.Linear(16 * 5 * 5, 120),
+                nn.ReLU()
+            )
+            self.fc2 = nn.Sequential(
+                nn.Linear(120, 84),
+                nn.ReLU()
+            )
+            self.fc3 = nn.Linear(84, 10)
 
-        if reg.lower() == "bn":  # add batch normalization after conv before activation
-            self.conv1.insert(1, nn.BatchNorm2d())
-            self.conv2.insert(1, nn.BatchNorm2d())
-            self.fc1.insert(1, nn.BatchNorm1d())
-            self.fc2.insert(1, nn.BatchNorm1d())
+        if reg.lower() == "nb":  # add batch normalization after conv before activation
+            self.conv1 = nn.Sequential(
+                nn.Conv2d(1, 6, kernel_size=5, stride=1, padding=2),
+                nn.BatchNorm2d(num_features=6),
+                nn.ReLU(),
+                nn.MaxPool2d(kernel_size=2, stride=2)
+            )
+            self.conv2 = nn.Sequential(
+                nn.Conv2d(6, 16, kernel_size=5, stride=1, padding=0),
+                nn.BatchNorm2d(num_features=16),
+                nn.ReLU(),
+                nn.MaxPool2d(kernel_size=2, stride=2)
+            )
+            self.fc1 = nn.Sequential(
+                nn.Linear(16 * 5 * 5, 120),
+                nn.BatchNorm1d(num_features=120),
+                nn.ReLU()
+            )
+            self.fc2 = nn.Sequential(
+                nn.Linear(120, 84),
+                nn.BatchNorm1d(num_features=84),
+                nn.ReLU()
+            )
+            self.fc3 = nn.Linear(84, 10)
 
         if reg.lower() == "dr":  # add dropout after activation before MaxPooling (one before last layer)
-            self.fc1.insert(len(self.fc1)-2, nn.Dropout(0.3))
-            self.fc2.insert(len(self.fc2)-2, nn.Dropout(0.3))
+            self.conv1 = nn.Sequential(
+                nn.Conv2d(1, 6, kernel_size=5, stride=1, padding=2),
+                nn.ReLU(),
+                nn.MaxPool2d(kernel_size=2, stride=2)
+            )
+            self.conv2 = nn.Sequential(
+                nn.Conv2d(6, 16, kernel_size=5, stride=1, padding=0),
+                nn.ReLU(),
+                nn.MaxPool2d(kernel_size=2, stride=2)
+            )
+            self.fc1 = nn.Sequential(
+                nn.Linear(16 * 5 * 5, 120),
+                nn.Dropout(0.3),
+                nn.ReLU()
+            )
+            self.fc2 = nn.Sequential(
+                nn.Linear(120, 84),
+                nn.Dropout(0.3),
+                nn.ReLU()
+            )
+            self.fc3 = nn.Linear(84, 10)
 
 
     def forward(self, x):

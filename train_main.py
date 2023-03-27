@@ -7,8 +7,8 @@ import torch.optim as optim  # optimizer algorithms package
 
 
 DATA_DIR = "../Fashion_mnist"
-OUTPUT_DIR = "/out"
-CHECKPOINT_DIR = "/checkpoints"
+OUTPUT_DIR = "out"
+CHECKPOINT_DIR = "checkpoints"
 
 
 # Arguments
@@ -26,7 +26,7 @@ def parse_args():
                         help='SGD momentum')
     parser.add_argument('--batch_size', '-b', default=128, type=int,
                         help='Training batch size')
-    parser.add_argument('--epochs', '-e', default=2, type=int,
+    parser.add_argument('--epochs', '-e', default=50, type=int,
                         help='Number of epochs to run')
     parser.add_argument('--model_name', '-m', default='Lenet5', type=str,
                         help='Model name: Lenet5')
@@ -34,10 +34,10 @@ def parse_args():
                         help='Optimization Algorithm')
     parser.add_argument('--regularization', '-reg',
                         default='none', type=str,
-                        help='regularization technique: none, "dr" - dropout, "nb" - batch_normalization, '
+                        help='regularization technique: "none", "dr" - dropout, "nb" - batch_normalization, '
                              '"wd" - weight_decay')
     parser.add_argument('--wd_param', '-wd_p',
-                        default='0.001', type=str,
+                        default=0.001, type=float,
                         help='Weight decay parameter') # Usually between 0.0001 to 0.001
     parser.add_argument('--dataset', '-d',
                         default='fashionmnist', type=str,

@@ -142,12 +142,14 @@ class Trainer:
             logging_parameters: LoggingParameters. Some parameters to log.
             data: dict. Holding a dictionary to dump to the output json.
         """
-        if not os.path.isdir(output_dir):
-            os.makedirs(output_dir)
+        #if not os.path.isdir(output_dir):
+        #    os.makedirs(output_dir)
 
         output_filename = f"{logging_parameters.model_name}_" \
                           f"{logging_parameters.regularization}_" \
-                          f"{logging_parameters.optimizer_name}_{logging_parameters.lr}_{logging_parameters.epochs}.json"
+                          f"{logging_parameters.optimizer_name}_" \
+                          f"{logging_parameters.lr}_{logging_parameters.epochs}_" \
+                          f"{logging_parameters.regularization}.json"
         output_filepath = os.path.join(output_dir, output_filename)
 
         print(f"Writing output to {output_filepath}")
@@ -183,11 +185,15 @@ class Trainer:
             "test_loss": [],
             "test_acc": [],
         }
+
+        #if not os.path.isdir(checkpoint_dir):
+        #    os.makedirs(checkpoint_dir)
+
         best_acc = 0
         model_filename = f"{logging_parameters.dataset_name}_" \
                          f"{logging_parameters.model_name}_" \
                          f"{logging_parameters.optimizer_name}_{logging_parameters.lr}_{logging_parameters.epochs}_" \
-                         f"{logging_parameters.weights_name}.pt"
+                         f"{logging_parameters.weights_name}_{logging_parameters.regularization}.pt"
         checkpoint_filename = os.path.join(checkpoint_dir, model_filename)
 
         for self.epoch in range(1, epochs + 1):
