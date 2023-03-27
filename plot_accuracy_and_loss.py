@@ -4,7 +4,7 @@ import json
 import argparse
 import matplotlib.pyplot as plt
 
-FIGURES_DIR = "/figures"
+FIGURES_DIR = "figures"
 
 
 # Arguments
@@ -19,7 +19,7 @@ def parse_args():
                         default='Lenet5', type=str,
                         help='Model name')
     parser.add_argument('--train_details_json', '-j',
-                        default='out/Lenet5_Adam.json', type=str,
+                        default='out/Lenet5_dr_SGD___dr.json', type=str,
                         help='Json containing loss and accuracy.')
     parser.add_argument('--dataset', '-d',
                         default='Lenet5', type=str,
@@ -56,7 +56,7 @@ def main():
     if args.regularization == "nb":
         title_suffix = f' With Batch Normalization'
     if args.regularization == "dr":
-        title_suffix = f'Loss as a Function of Epoch Number With Dropout'
+        title_suffix = f' With Dropout'
 
     plt.title('Loss as a Function of Epoch Number'+title_suffix)
     plt.xlabel('Epoch')
@@ -92,7 +92,7 @@ def main():
     accuracies_plot.set_size_inches((8, 8))
     accuracies_plot.savefig(
         os.path.join(FIGURES_DIR,
-                     f'{args.dataset}_{args.model}_accuracies_plot.png'))
+                     f'{args.dataset}_{args.model}_accuracies_plot_{title_suffix}.png'))
     plt.show()
 
 if __name__ == '__main__':
