@@ -36,6 +36,9 @@ def parse_args():
                         default='none', type=str,
                         help='regularization technique: none, "dr" - dropout, "nb" - batch_normalization, '
                              '"wd" - weight_decay')
+    parser.add_argument('--wd_param', '-wd_p',
+                        default='0.001', type=str,
+                        help='Weight decay parameter') # Usually between 0.0001 to 0.001
     parser.add_argument('--dataset', '-d',
                         default='fashionmnist', type=str,
                         help='dataset name')
@@ -63,12 +66,15 @@ def main():
     criterion = nn.CrossEntropyLoss()
 
     # Build optimizer
+    wd_param = 0 # Weight decay parameter
+    if reg == "wd":
+        wd_param = args.wd_param
     optimizers = {
         'SGD': lambda: optim.SGD(model.parameters(),
                                  lr=args.lr,
                                  momentum=args.momentum,
-                                 weight_decay=0 if reg != "wd" else 0.01),
-        'Adam': lambda: optim.Adam(model.parameters(), lr=args.lr),
+                                 weight_decay=wd_param),
+        'Adam': lambda: optim.Adam(model.parameters(), lr=args.lr, weight_decay=wd_param),
     }
     optimizer_name = args.optimizer
     if optimizer_name not in optimizers:

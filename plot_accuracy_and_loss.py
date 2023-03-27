@@ -24,6 +24,10 @@ def parse_args():
     parser.add_argument('--dataset', '-d',
                         default='Lenet5', type=str,
                         help='Dataset')
+    parser.add_argument('--regularization', '-reg',
+                        default='none', type=str,
+                        help='regularization technique: none, "dr" - dropout, "nb" - batch_normalization, '
+                             '"wd" - weight_decay')
 
     return parser.parse_args()
 
@@ -43,14 +47,35 @@ def main():
     plt.plot(range(1, len(results_dict['test_loss']) + 1),
              results_dict['test_loss'])
     plt.legend(['train', 'val', 'test'])
-    plt.title(f'loss vs epoch for {args.model} model on {args.dataset} dataset')
-    plt.xlabel('epoch')
-    plt.ylabel('loss')
+
+    # Create graph title suffix depending on regularization type
+    if args.regularization == "none":
+        title_suffix = ""
+    if args.regularization == "wd":
+        title_suffix = ' With Weight Decay'
+    if args.regularization == "nb":
+        title_suffix = f' With Batch Normalization'
+    if args.regularization == "dr":
+        title_suffix = f'Loss as a Function of Epoch Number With Dropout'
+
+    plt.title('Loss as a Function of Epoch Number'+title_suffix)
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
     plt.grid(True)
     losses_plot.set_size_inches((8, 8))
+
+    # Create file name for graph figure depending on regularization type
+    if args.regularization == "none":
+        file_name = f'losses_plot.png'
+    if args.regularization == "wd":
+        file_name = f'losses_plot_weight_decay.png'
+    if args.regularization == "nb":
+        file_name = f'losses_plot_batch_normalization.png'
+    if args.regularization == "dr":
+        file_name = f'losses_plot_dropout.png'
+
     losses_plot.savefig(
-        os.path.join(FIGURES_DIR,
-                     f'{args.dataset}_{args.model}_losses_plot.png'))
+        os.path.join(FIGURES_DIR,file_name))
 
     accuracies_plot = plt.figure()
     plt.plot(range(1, len(results_dict['train_acc']) + 1),
@@ -60,10 +85,9 @@ def main():
     plt.plot(range(1, len(results_dict['test_acc']) + 1),
              results_dict['test_acc'])
     plt.legend(['train', 'val', 'test'])
-    plt.title(f'accuracy vs epoch for {args.model} '
-              f'model on {args.dataset} dataset')
-    plt.xlabel('epoch')
-    plt.ylabel('accuracy')
+    plt.title(f'Accuracy as a Function of Epoch Number'+title_suffix)
+    plt.xlabel('Epoch')
+    plt.ylabel('Accuracy')
     plt.grid(True)
     accuracies_plot.set_size_inches((8, 8))
     accuracies_plot.savefig(
